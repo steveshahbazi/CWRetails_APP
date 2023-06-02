@@ -2,7 +2,7 @@
 
 namespace CWRetails_API.Data
 {
-    public class Pizzerias
+    public static class Pizzerias
     {
         public static List<Pizzeria> pizzerias = new()
         {

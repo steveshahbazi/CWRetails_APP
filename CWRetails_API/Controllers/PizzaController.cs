@@ -11,6 +11,7 @@ namespace CWRetails_API.Controllers
     public class PizzaController : ControllerBase
     {
         [HttpGet("pizzerias")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public IActionResult GetPizzeriaNames()
         {
             var pizzeriaNames = pizzerias.Select(p => p.Name).ToList();
@@ -18,6 +19,8 @@ namespace CWRetails_API.Controllers
         }
 
         [HttpGet("menu")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public IActionResult GetMenu(string pizzeriaName)
         {
             var pizzeria = pizzerias.FirstOrDefault(p => p.Name == pizzeriaName);
@@ -28,6 +31,8 @@ namespace CWRetails_API.Controllers
         }
 
         [HttpPost("calculateTotalPrice")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public IActionResult CalculateTotalPrice(Order order)
         {
             var pizzeria = pizzerias.FirstOrDefault(p => p.Name == order.PizzeriaName);
@@ -41,16 +46,42 @@ namespace CWRetails_API.Controllers
         }
 
         [HttpPost("addPizzeria")]
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
         public IActionResult AddPizzeria(Pizzeria pizzeria)
         {
+            if(pizzeria == null)
+                return BadRequest();
+
             if (pizzerias.Any(p => p.Name == pizzeria.Name))
                 return Conflict("A pizzeria with the same name already exists.");
 
+            pizzeria.Id = GetNextPizzeriaId();
             pizzerias.Add(pizzeria);
-            return Ok();
+            return CreatedAtAction(nameof(GetPizzariaById), new { id = pizzeria.Id }, pizzeria);
+        }
+
+        [HttpGet("pizzaria")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public IActionResult GetPizzariaById(int pizzariaId)
+        {
+            if (pizzariaId <= 0)
+                return BadRequest();
+
+            var pizzeria = pizzerias.FirstOrDefault(p => p.Id == pizzariaId);
+            if (pizzeria == null)
+                return NotFound();
+
+            return Ok(pizzeria);
         }
 
         [HttpPut("updatePizzeria")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
         public IActionResult UpdatePizzeria(string pizzeriaName, Pizzeria updatedPizzeria)
         {
             var pizzeria = pizzerias.FirstOrDefault(p => p.Name == pizzeriaName);
@@ -67,6 +98,8 @@ namespace CWRetails_API.Controllers
         }
 
         [HttpDelete("deletePizzeria")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public IActionResult DeletePizzeria(string pizzeriaName)
         {
             var pizzeria = pizzerias.FirstOrDefault(p => p.Name == pizzeriaName);
@@ -78,6 +111,8 @@ namespace CWRetails_API.Controllers
         }
 
         [HttpPost("addPizzaToMenu")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public IActionResult AddPizzaToMenu(string pizzeriaName, Pizza pizza)
         {
             var pizzeria = pizzerias.FirstOrDefault(p => p.Name == pizzeriaName);
@@ -91,6 +126,9 @@ namespace CWRetails_API.Controllers
         }
 
         [HttpPut("updatePizzaInMenu")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
         public IActionResult UpdatePizzaInMenu(string pizzeriaName, int pizzaId, Pizza updatedPizza)
         {
             var pizzeria = pizzerias.FirstOrDefault(p => p.Name == pizzeriaName);
@@ -112,6 +150,8 @@ namespace CWRetails_API.Controllers
         }
 
         [HttpDelete("deletePizzaFromMenu")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public IActionResult DeletePizzaFromMenu(string pizzeriaName, int pizzaId)
         {
             var pizzeria = pizzerias.FirstOrDefault(p => p.Name == pizzeriaName);
@@ -126,9 +166,15 @@ namespace CWRetails_API.Controllers
             return Ok();
         }
 
-        private int GetNextPizzaId()
+        private static int GetNextPizzaId()
         {
             int maxId = pizzerias.SelectMany(p => p.Menu).Max(pizza => pizza.Id);
+            return maxId + 1;
+        }
+        
+        private static int GetNextPizzeriaId()
+        {
+            int maxId = pizzerias.Max(p => p.Id);
             return maxId + 1;
         }
     }
