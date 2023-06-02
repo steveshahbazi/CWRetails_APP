@@ -80,10 +80,14 @@ namespace CWRetails_API.Controllers
 
         [HttpPut("updatePizzeria")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
         public IActionResult UpdatePizzeria(string pizzeriaName, Pizzeria updatedPizzeria)
         {
+            if(updatedPizzeria == null || string.IsNullOrEmpty(pizzeriaName))
+                return BadRequest();
+
             var pizzeria = pizzerias.FirstOrDefault(p => p.Name == pizzeriaName);
             if (pizzeria == null)
                 return NotFound();
@@ -112,9 +116,13 @@ namespace CWRetails_API.Controllers
 
         [HttpPost("addPizzaToMenu")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public IActionResult AddPizzaToMenu(string pizzeriaName, Pizza pizza)
         {
+            if (pizza == null || string.IsNullOrEmpty(pizzeriaName))
+                return BadRequest();
+
             var pizzeria = pizzerias.FirstOrDefault(p => p.Name == pizzeriaName);
             if (pizzeria == null)
                 return NotFound();
@@ -127,10 +135,14 @@ namespace CWRetails_API.Controllers
 
         [HttpPut("updatePizzaInMenu")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status409Conflict)]
         public IActionResult UpdatePizzaInMenu(string pizzeriaName, int pizzaId, Pizza updatedPizza)
         {
+            if (updatedPizza == null || string.IsNullOrEmpty(pizzeriaName) || pizzaId <= 0)
+                return BadRequest();
+
             var pizzeria = pizzerias.FirstOrDefault(p => p.Name == pizzeriaName);
             if (pizzeria == null)
                 return NotFound();
