@@ -1,9 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.Extensions.Hosting;
 
 namespace CWRetails_API.Model
 {
-    public class Topping
+    public class Ingredient
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
@@ -15,12 +16,9 @@ namespace CWRetails_API.Model
         [Required]
         public string Name { get; set; } = string.Empty;
 
-        [Range(0, 1000)]
-        [DataType(DataType.Currency)]
-        [Required]
-        public decimal Price { get; set; }
         public List<Pizza> Pizzas { get; } = new();
-        public List<ToppingPizza> ToppingPizza { get; } = new();
+        public List<IngredientPizza> IngredientPizza { get; } = new();
 
     }
+
 }
