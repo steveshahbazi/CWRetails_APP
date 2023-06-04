@@ -14,17 +14,6 @@ namespace CWRetails_API.Model.Converter
             return dto;
         }
 
-        public static OrderDto OrderToDto(Order order)
-        {
-            OrderDto dto = new()
-            {
-                Id = order.Id,
-                Pizzas = order.Pizzas.Select(p => PizzaToDto(p)).ToList(),
-                PizzeriaName = order.Pizzeria.Name
-            };
-            return dto;
-        }
-
         public static PizzaDto PizzaToDto(Pizza pizza)
         {
             PizzaDto dto = new()

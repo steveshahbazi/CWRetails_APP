@@ -13,6 +13,5 @@ namespace CWRetails_API.Model
         public string Name { get; set; } = string.Empty;
 
         public ICollection<Pizza> Pizzas { get; set; } = new List<Pizza>();
-        public ICollection<Order> Orders { get; set; } = new List<Order>();
     }
 }

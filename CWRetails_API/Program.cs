@@ -1,12 +1,14 @@
 using CWRetails_API;
 using CWRetails_API.Data;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddDbContext<ApplicationDbContext>(option => {
-    option.UseSqlServer(builder.Configuration.GetConnectionString("DefaultSQLConnection"));
+builder.Services.AddDbContext<ApplicationDbContext>(options => {
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultSQLConnection"));
+    options.UseQueryTrackingBehavior(QueryTrackingBehavior.NoTracking);
 });
 
 builder.Services.AddAutoMapper(typeof(MappingConfig));

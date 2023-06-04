@@ -15,10 +15,7 @@ namespace CWRetails_API.Model
         [DataType(DataType.Text)]
         [Required]
         public string Name { get; set; } = string.Empty;
-
-        public List<Pizza> Pizzas { get; } = new();
-        public List<IngredientPizza> IngredientPizza { get; } = new();
-
+        public ICollection<Pizza> Pizzas { get; set; } = new List<Pizza>();
     }
 
 }

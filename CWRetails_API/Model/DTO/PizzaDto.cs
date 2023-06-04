@@ -12,6 +12,22 @@ namespace CWRetails_API.Model.DTO
         public ICollection<ToppingDto> Toppings { get; set; } = new List<ToppingDto>();
         public decimal BasePrice { get; set; }
         public int PizzaCount { get; set; }
-        public decimal TotalPrice => PizzaCount * (BasePrice + (Toppings?.Sum(t => t.Price) ?? 0));
+
+        public decimal TotalPrice => PizzaCount * (BasePrice + GetToppingsPrice());
+
+        private decimal GetToppingsPrice()
+        {
+            decimal toppingsPrice = 0;
+            ICollection<string> toppings = new List<string> { "Cheese", "Capsicum", "Salami", "Olives" };
+
+            if (Toppings != null)
+            {
+                toppingsPrice = Toppings
+                    .Where(ingredient => toppings.Contains(ingredient.Name))
+                    .Sum(_ => 1);//each topping costs $1
+            }
+
+            return toppingsPrice;
+        }
     }
 }

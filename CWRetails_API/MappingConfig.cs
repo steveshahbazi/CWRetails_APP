@@ -8,7 +8,9 @@ namespace CWRetails_API
     {
         public MappingConfig()
         {
-            CreateMap<Order, OrderDto>().ReverseMap();
+            CreateMap<Pizza, PizzaDto>().ReverseMap();
+            CreateMap<Ingredient, IngredientDto>().ReverseMap();
+            CreateMap<Pizzeria, PizzeriaDto>().ReverseMap();
         }
     }
 }
