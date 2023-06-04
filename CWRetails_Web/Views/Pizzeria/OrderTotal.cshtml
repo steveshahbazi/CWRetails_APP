@@ -1,0 +1,117 @@
+﻿@model CWRetails_Web.Models.DTO.OrderDto
+
+<form asp-action="OrderTotal" method="post">
+    <br />
+    <div class="container border p-3">
+        <h1 class="text-primary">Calculate Order Total</h1>
+        <br />
+        <div class="row">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="col-2">
+                <label asp-for="PizzeriaName" class="control-label pt-2" style="font-size:20px;"></label>
+            </div>
+            <div class="col-10">
+                <input asp-for="PizzeriaName" class="form-control" />
+                <span asp-validation-for="PizzeriaName" class="text-danger"></span>
+            </div>
+        </div>
+
+        <hr />
+
+        <div class="row">
+            <div class="col-12">
+                <h3>Pizzas</h3>
+            </div>
+        </div>
+
+        <div class="row" id="pizzasContainer">
+            <div class="col-12">
+                <button type="button" class="btn btn-primary" onclick="addPizza()">Add Pizza</button>
+            </div>
+        </div>
+
+        <br />
+
+        <div class="row">
+            <div class="col-5 offset-2">
+                <a asp-action="IndexPizzeria" asp-controller="Pizzeria" class="btn-primary btn form-control">Back to Pizzeria List</a>
+            </div>
+            <div class="col-5">
+                <input type="submit" class="btn btn-success form-control" value="Calculate" />
+            </div>
+        </div>
+    </div>
+</form>
+
+@section Scripts{
+    <script>
+        var pizzaIndex = 0;
+
+        function addPizza() {
+            var container = document.getElementById("pizzasContainer");
+
+            var pizzaDiv = document.createElement("div");
+            pizzaDiv.classList.add("col-12");
+
+            var pizzaHeading = document.createElement("h4");
+            pizzaHeading.innerText = "Pizza " + (++pizzaIndex);
+
+            var pizzaNameLabel = document.createElement("label");
+            pizzaNameLabel.innerText = "Name: ";
+            pizzaNameLabel.classList.add("pt-2");
+            var pizzaNameInput = document.createElement("input");
+            pizzaNameInput.classList.add("form-control");
+            pizzaNameInput.setAttribute("name", "Pizzas[" + (pizzaIndex - 1) + "].Name");
+
+            var pizzaCountLabel = document.createElement("label");
+            pizzaCountLabel.innerText = "Count: ";
+            pizzaCountLabel.classList.add("pt-2");
+            var pizzaCountInput = document.createElement("input");
+            pizzaCountInput.classList.add("form-control");
+            pizzaCountInput.setAttribute("name", "Pizzas[" + (pizzaIndex - 1) + "].PizzaCount");
+            pizzaCountInput.setAttribute("type", "number");
+
+            var toppingsDiv = document.createElement("div");
+            toppingsDiv.classList.add("row");
+            toppingsDiv.classList.add("mt-2");
+
+            var addToppingButton = document.createElement("button");
+            addToppingButton.classList.add("btn");
+            addToppingButton.classList.add("btn-secondary");
+            addToppingButton.type = "button";
+            addToppingButton.innerText = "Add Topping";
+            addToppingButton.addEventListener("click", function () {
+                addTopping(toppingsDiv, pizzaIndex);
+            });
+
+            pizzaDiv.appendChild(pizzaHeading);
+            pizzaDiv.appendChild(pizzaNameLabel);
+            pizzaDiv.appendChild(pizzaNameInput);
+            pizzaDiv.appendChild(pizzaCountLabel);
+            pizzaDiv.appendChild(pizzaCountInput);
+            pizzaDiv.appendChild(toppingsDiv);
+            pizzaDiv.appendChild(addToppingButton);
+
+            container.appendChild(pizzaDiv);
+        }
+
+        function addTopping(toppingsDiv, pizzaIndex) {
+            var index = toppingsDiv.childElementCount;
+
+            var toppingDiv = document.createElement("div");
+            toppingDiv.classList.add("col-6");
+
+            var toppingNameLabel = document.createElement("label");
+            toppingNameLabel.innerText = "Topping " + (index + 1) + ": ";
+            toppingNameLabel.classList.add("pt-2");
+            var toppingNameInput = document.createElement("input");
+            toppingNameInput.classList.add("form-control");
+            toppingNameInput.setAttribute("name", `Pizzas[${pizzaIndex - 1}].Toppings[${index}].Name`);
+
+            toppingDiv.appendChild(toppingNameLabel);
+            toppingDiv.appendChild(toppingNameInput);
+
+            toppingsDiv.appendChild(toppingDiv);
+        }
+    </script>
+}

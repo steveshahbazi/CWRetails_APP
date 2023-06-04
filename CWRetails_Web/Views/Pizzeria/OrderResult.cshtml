@@ -1,0 +1,15 @@
+﻿@model CWRetails_Web.Controllers.OrderViewModel
+
+<h1 class="text-primary">Order Result</h1>
+
+<div>
+    <h4>Pizzeria Name: @Model.Order.PizzeriaName</h4>
+    <h4>Pizzas:</h4>
+    <ul>
+        @foreach (var pizza in Model.Order.Pizzas)
+        {
+            <li>@pizza.Name</li>
+        }
+    </ul>
+    <h4>Total Price: @Model.TotalPrice</h4>
+</div>

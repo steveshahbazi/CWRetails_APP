@@ -1,0 +1,16 @@
+﻿@model decimal
+
+<br />
+<div class="container p-4 border">
+    <div class="row pb-2">
+        <div class="col">
+            <h1 class="text-primary">Order Total</h1>
+        </div>
+        <div class="col">
+            <h1 class="text-primary">Total Price: @Model</h1>
+        </div>
+        <div class="col text-end pt-1">
+            <a asp-controller="Pizzeria" asp-action="CreatePizzeria" class="btn btn-outline-primary"><i class="bi bi-file-plus-fill"></i>Back to Home</a>
+        </div>
+    </div>
+</div>

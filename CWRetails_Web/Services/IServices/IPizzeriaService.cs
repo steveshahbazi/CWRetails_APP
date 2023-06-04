@@ -11,7 +11,7 @@ namespace CWRetails_Web.Services.IServices
         Task<T> CalculateTotalPrice<T>(OrderDto order);
         Task<T> CreateAsync<T>(PizzeriaDto dto);
         Task<T> AddAsync<T>(PizzaDto dto);
-        Task<T> UpdateAsync<T>(PizzaDto dto);
+        Task<T> UpdateAsync<T>(PizzeriaDto dto);
         Task<T> DeleteAsync<T>(int id);
     }
 }

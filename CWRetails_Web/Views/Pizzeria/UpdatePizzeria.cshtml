@@ -1,0 +1,109 @@
+﻿@model CWRetails_Web.Models.DTO.PizzeriaDto
+
+<form asp-action="UpdatePizzeria" method="post">
+    @Html.AntiForgeryToken()
+
+    <br />
+    <div class="container border p-3">
+        <h1 class="text-primary">Update Pizzeria</h1>
+        <br />
+
+        <input hidden asp-for="Id" />
+        <div class="row">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+            <div class="col-2">
+                <label asp-for="Name" class="control-label pt-2" style="font-size:20px;"></label>
+            </div>
+            <div class="col-10 pb-3">
+                <input asp-for="Name" class="form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12">
+                <h3>Pizzas</h3>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12">
+                <div id="pizza-container">
+                    @for (int i = 0; i < Model.Pizzas.Count; i++)
+                    {
+                        <div class="row" id="pizza-@i">
+                            <div class="col-12">
+                                <h4>Pizza @i</h4>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-2">
+                                <label>Name:</label>
+                            </div>
+                            <div class="col-10 pb-3">
+                                <input asp-for="Pizzas[i].Id" type="hidden" />
+                                <input asp-for="Pizzas[i].Name" class="form-control" />
+                                <span asp-validation-for="Pizzas[i].Name" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-2">
+                                <label>Price:</label>
+                            </div>
+                            <div class="col-10 pb-3">
+                                <input asp-for="Pizzas[i].BasePrice" class="form-control" />
+                                <span asp-validation-for="Pizzas[i].BasePrice" class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <h5>Ingredients</h5>
+                            </div>
+                        </div>
+                        @for (int j = 0; j < Model.Pizzas[i].Ingredients.Count; j++)
+                        {
+                            <div class="row">
+                                <div class="col-2">
+                                    <label>Ingredient @j:</label>
+                                </div>
+                                <div class="col-10 pb-3">
+                                    <input asp-for="Pizzas[i].Ingredients[j].Id" type="hidden" />
+                                    <input asp-for="Pizzas[i].Ingredients[j].Name" class="form-control" />
+                                    <span asp-validation-for="Pizzas[i].Ingredients[j].Name" class="text-danger"></span>
+                                </div>
+                            </div>
+                        }
+
+                        <div class="row">
+                            <div class="col-12">
+                                <a onclick="deletePizza(@i)" class="btn btn-danger" style="pointer-events: none"><i class="bi bi-trash-fill"></i>Delete Pizza</a>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-5 offset-2">
+                <a asp-action="IndexPizzeria" asp-controller="Pizzeria" class="btn-primary btn form-control">Back to Pizzeria List</a>
+            </div>
+            <div class="col-5">
+                <input type="submit" value="Update" class="btn btn-success form-control" />
+            </div>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    <script>
+        function deletePizza(index) {
+            var confirmation = confirm("Are you sure you want to delete this pizza?");
+            if (confirmation) {
+                var pizzaElement = document.getElementById("pizza-" + index);
+                pizzaElement.remove();
+            }
+        }
+    </script>
+}

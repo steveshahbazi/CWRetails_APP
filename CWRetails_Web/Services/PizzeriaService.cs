@@ -52,13 +52,13 @@ namespace CWRetails_Web.Services
             });
         }
 
-        public Task<T> UpdateAsync<T>(PizzaDto dto)
+        public Task<T> UpdateAsync<T>(PizzeriaDto dto)
         {
             return SendAsync<T>(new APIRequest()
             {
                 ApiType = CWRetails_Utility.SD.ApiType.Put,
                 Data = dto,
-                Uri = pizzeriaUrl + $"/api/pizzeriaAPI/updatePizza"
+                Uri = pizzeriaUrl + $"/api/pizzeriaAPI/updatePizzeria"
             });
         }
         public Task<T> CalculateTotalPrice<T>(OrderDto order)

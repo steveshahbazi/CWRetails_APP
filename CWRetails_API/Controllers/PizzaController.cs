@@ -31,7 +31,7 @@ namespace CWRetails_API.Controllers
             _response = new APIResponse();
         }
 
-        [HttpGet("pizzerias")]
+        [HttpGet("pizzeriasNames")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<APIResponse>> GetPizzeriaNames()
         {
@@ -49,6 +49,30 @@ namespace CWRetails_API.Controllers
             }
             return _response;
         }
+
+        [HttpGet("pizzerias")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        public async Task<ActionResult<APIResponse>> GetAllPizzeria()
+        {
+            try
+            {
+                var pizzerias = await _db.Pizzerias.ToListAsync();
+                var dto = _mapper.Map<List<Pizzeria>, List<PizzeriaDto>>(pizzerias);
+
+                _response.Result = dto;
+                _response.StatusCode = HttpStatusCode.OK;
+
+                return Ok(_response);
+            }
+            catch (Exception ex)
+            {
+                _response.IsSuccess = false;
+                _response.ErrorMessages = new List<string> { ex.Message };
+
+                return _response;
+            }
+        }
+
 
         [HttpGet("menu")]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -105,7 +129,7 @@ namespace CWRetails_API.Controllers
 
             decimal totalPrice = order.Pizzas.Sum(p =>
             {
-                var matchingPizza = menu.FirstOrDefault(pizza => pizza.Id == p.Id);
+                var matchingPizza = menu.FirstOrDefault(pizza => pizza.Name == p.Name);
                 if (matchingPizza != null)
                 {
                     p.BasePrice = matchingPizza.BasePrice;
@@ -141,7 +165,7 @@ namespace CWRetails_API.Controllers
             }
 
             var pizza = await _db.Pizzas.Include(p => p.Ingredients)
-                                      .Where(p => p.PizzeriaId == updatedPizza.Id && p.Id == updatedPizza.Id)
+                                      .Where(p => p.PizzeriaId == pizzeria.Id && p.Id == updatedPizza.Id)
                                       .FirstOrDefaultAsync();
 
             if (pizza == null)
@@ -194,6 +218,49 @@ namespace CWRetails_API.Controllers
             _db.SaveChanges();
 
             _response.Result = "Pizza updated successfully";
+            _response.StatusCode = HttpStatusCode.OK;
+            return Ok(_response);
+        }
+
+        [HttpPut("updatePizzeria")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
+        public async Task<ActionResult<APIResponse>> UpdatePizzeria(PizzeriaDto updatedPizzeria)
+        {
+            if (updatedPizzeria == null)
+            {
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                return BadRequest(_response);
+            }
+
+            var pizzeria = await _db.Pizzerias.FirstOrDefaultAsync(p => p.Id == updatedPizzeria.Id);
+            if (pizzeria == null)
+            {
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.Result = "Pizzeria not found";
+                return NotFound(_response);
+            }
+
+            var existingPizzeria = await _db.Pizzerias.FirstOrDefaultAsync(p => p.Name == updatedPizzeria.Name &&
+                p.Id != updatedPizzeria.Id);
+            if (existingPizzeria != null)
+            {
+                _response.StatusCode = HttpStatusCode.BadRequest;
+                _response.Result = "Pizzeria name is taken";
+                return NotFound(_response);
+            }
+
+            pizzeria.Name = updatedPizzeria.Name;
+            foreach (var pizza in updatedPizzeria.Pizzas)
+            {
+                await UpdatePizza(updatedPizzeria.Name, pizza);
+            }
+            
+            _db.SaveChanges();
+
+            _response.Result = "Pizzeria updated successfully";
             _response.StatusCode = HttpStatusCode.OK;
             return Ok(_response);
         }

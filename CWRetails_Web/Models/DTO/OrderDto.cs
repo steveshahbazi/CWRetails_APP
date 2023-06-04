@@ -7,5 +7,7 @@ namespace CWRetails_Web.Models.DTO
         public int Id { get; set; }
         public string? PizzeriaName { get; set; }
         public List<PizzaDto>? Pizzas { get; set; }
+        public List<ToppingDto>? Topping { get; set; }
+
     }
 }

@@ -1,4 +1,4 @@
-﻿@model IEnumerable<string>
+﻿@model IEnumerable<CWRetails_Web.Models.DTO.PizzeriaDto>
 <br />
 <div class="container p-4 border">
     <div class="row pb-2">
@@ -24,11 +24,11 @@
             {
                 <tr>
                     <th>
-                        @item
+                        @item.Name
                     </th>
                     <th>
-                        <a asp-controller="Pizzeria" asp-action="UpdatePizzeria" class="btn btn-success"><i class="bi bi-pencil-fill"></i></a>
-                        <a asp-controller="Pizzeria" asp-action="DeletePizzeria" class="btn btn-danger"><i class="bi bi-trash-fill"></i></a>
+                        <a asp-controller="Pizzeria" asp-action="UpdatePizzeria" asp-route-termId="@item.Id" class="btn btn-success"><i class="bi bi-pencil-fill"></i></a>
+                        <a asp-controller="Pizzeria" asp-action="DeletePizzeria" style="pointer-events: none" class="btn btn-danger"><i class="bi bi-trash-fill"></i></a>
                     </th>
                 </tr>
             }
