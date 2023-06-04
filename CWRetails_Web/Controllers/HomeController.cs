@@ -1,32 +1,31 @@
 ﻿using CWRetails_Web.Models;
+using CWRetails_Web.Models.DTO;
+using CWRetails_Web.Services.IServices;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using System.Diagnostics;
 
 namespace CWRetails_Web.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
+        private readonly IPizzeriaService _pizzeriaService;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(IPizzeriaService pizzeriaService)
         {
-            _logger = logger;
+            _pizzeriaService = pizzeriaService;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index()
         {
-            return View();
-        }
+            List<PizzeriaDto> list = new();
+            var response = await _pizzeriaService.GetAllAsync<APIResponse>();
+            if (response != null && response.IsSuccess)
+            {
+                list = JsonConvert.DeserializeObject<List<PizzeriaDto>>(Convert.ToString(response.Result));
+            }
 
-        public IActionResult Privacy()
-        {
-            return View();
-        }
-
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
-        {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            return View(list);
         }
     }
 }
