@@ -12,7 +12,7 @@ namespace CWRetails_Web.Services
         public PizzeriaService(IHttpClientFactory clientFactory, IConfiguration configuration) : base(clientFactory)
         {
             _clientFactory = clientFactory;
-            pizzeriaUrl = configuration.GetValue<string>("ServiceUrls:CWRetailsAPI");
+            pizzeriaUrl = configuration.GetValue<string>("ServicesUrls:CWRetailsAPI");
         }
 
         public Task<T> CreateAsync<T>(PizzeriaDto dto)

@@ -1,7 +1,13 @@
+using CWRetails_Web.Services;
+using CWRetails_Web.Services.IServices;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddHttpClient<IPizzeriaService, PizzeriaService>();
+builder.Services.AddScoped<IPizzeriaService, PizzeriaService>();
 
 var app = builder.Build();
 
