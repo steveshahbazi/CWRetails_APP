@@ -18,4 +18,16 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Repository\IRepository\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <EditorConfigFiles Remove="C:\My Projects\CWRetails_APP\CWRetails_API\Model\.editorconfig" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="C:\My Projects\CWRetails_APP\CWRetails_API\Model\.editorconfig" />
+  </ItemGroup>
+
 </Project>
