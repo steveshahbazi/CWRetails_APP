@@ -15,7 +15,7 @@ namespace CWRetails_API.Model
         [DataType(DataType.Text)]
         [Required]
         public string Name { get; set; } = string.Empty;
-        public ICollection<Ingredient> Ingredients { get; set; } = new List<Ingredient>();
+        public List<Ingredient> Ingredients { get; set; } = new List<Ingredient>();
 
         public int PizzeriaId { get; set; }
         public Pizzeria Pizzeria { get; set; }

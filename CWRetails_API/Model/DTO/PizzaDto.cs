@@ -8,8 +8,8 @@ namespace CWRetails_API.Model.DTO
     {
         public int Id { get; set; }
         public string Name { get; set; } = string.Empty;
-        public ICollection<IngredientDto> Ingredients { get; set; } = new List<IngredientDto>();
-        public ICollection<ToppingDto> Toppings { get; set; } = new List<ToppingDto>();
+        public List<IngredientDto> Ingredients { get; set; } = new List<IngredientDto>();
+        public List<ToppingDto> Toppings { get; set; } = new List<ToppingDto>();
         public decimal BasePrice { get; set; }
         public int PizzaCount { get; set; }
 

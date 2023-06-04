@@ -34,18 +34,18 @@ namespace CWRetails_API.Data
                 .UsingEntity(j => j.ToTable("PizzaIngredients"));
 
             modelBuilder.Entity<Ingredient>().HasData(
-    new Ingredient { Id = 1, Name = "Cheese" },
-    new Ingredient { Id = 2, Name = "Ham" },
-    new Ingredient { Id = 3, Name = "Mushrooms" },
-    new Ingredient { Id = 4, Name = "Olives" },
-    new Ingredient { Id = 5, Name = "Salami" },
-    new Ingredient { Id = 6, Name = "Capsicum" },
-    new Ingredient { Id = 7, Name = "Chilli" },
-    new Ingredient { Id = 8, Name = "Spinach" },
-    new Ingredient { Id = 9, Name = "Ricotta" },
-    new Ingredient { Id = 10, Name = "Cherry Tomatoes" },
-    new Ingredient { Id = 11, Name = "Onion" }
-);
+                new Ingredient { Id = 1, Name = "Cheese" },
+                new Ingredient { Id = 2, Name = "Ham" },
+                new Ingredient { Id = 3, Name = "Mushrooms" },
+                new Ingredient { Id = 4, Name = "Olives" },
+                new Ingredient { Id = 5, Name = "Salami" },
+                new Ingredient { Id = 6, Name = "Capsicum" },
+                new Ingredient { Id = 7, Name = "Chilli" },
+                new Ingredient { Id = 8, Name = "Spinach" },
+                new Ingredient { Id = 9, Name = "Ricotta" },
+                new Ingredient { Id = 10, Name = "Cherry Tomatoes" },
+                new Ingredient { Id = 11, Name = "Onion" }
+            );
 
             modelBuilder.Entity<Pizzeria>().HasData(
                 new Pizzeria { Id = 1, Name = "Preston Pizzeria" },

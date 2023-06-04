@@ -44,12 +44,15 @@ namespace CWRetails_API.Controllers
             if (pizzeria == null)
                 return NotFound();
 
-            IQueryable<Pizza> menuQuery = _db.Pizzas.Where(p => p.PizzeriaId == pizzeria.Id).Distinct();
-            menuQuery = menuQuery.Include(pizza => pizza.Ingredients);
-            List<Pizza> pizzas = await menuQuery.ToListAsync();
-            List<PizzaDto> menu = _mapper.Map<List<PizzaDto>>(pizzas);
+            var menuQuery = _db.Pizzas.Include(p => p.Ingredients)
+                                      .Where(p => p.PizzeriaId == pizzeria.Id)
+                                      .Distinct();
+
+            var pizzas = await menuQuery.ToListAsync();
+            var menu = _mapper.Map<List<PizzaDto>>(pizzas);
             return Ok(menu);
         }
+
 
         [HttpPost("calculateTotalPrice")]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -67,13 +70,13 @@ namespace CWRetails_API.Controllers
             IQueryable<Pizza> menuQuery = _db.Pizzas.Where(p => p.PizzeriaId == pizzeria.Id).Distinct();
             menuQuery = menuQuery.Include(pizza => pizza.Ingredients);
             List<Pizza> menu = await menuQuery.ToListAsync();
+
             bool isSubset = order.Pizzas.All(p => menu.Any(item => item.Name == p.Name));
-            if(!isSubset)
+            if (!isSubset)
                 return BadRequest();
 
             decimal totalPrice = order.Pizzas.Sum(p =>
             {
-                int pizzaCount = p.PizzaCount;
                 var matchingPizza = menu.FirstOrDefault(pizza => pizza.Id == p.Id);
                 if (matchingPizza != null)
                 {
@@ -96,14 +99,13 @@ namespace CWRetails_API.Controllers
             if (updatedPizza == null)
                 return BadRequest();
 
-            // Retrieve the pizzeria from the database based on the name
             var pizzeria = await _db.Pizzerias.FirstOrDefaultAsync(p => p.Name == pizzeriaName);
-
             if (pizzeria == null)
                 return NotFound("Pizzeria not found");
 
-            // Retrieve the pizza from the pizzeria's menu based on the name
-            var pizza = pizzeria.Pizzas.FirstOrDefault(p => p.Name == updatedPizza.Name);
+            var pizza = await _db.Pizzas.Include(p => p.Ingredients)
+                                      .Where(p => p.PizzeriaId == updatedPizza.Id && p.Id == updatedPizza.Id)
+                                      .FirstOrDefaultAsync();
 
             if (pizza == null)
                 return NotFound("Pizza not found");
@@ -112,29 +114,49 @@ namespace CWRetails_API.Controllers
             pizza.Name = updatedPizza.Name;
             pizza.BasePrice = updatedPizza.BasePrice;
 
-            // Clear the existing ingredients
-            pizza.Ingredients.Clear();
+            // Clear the existing ingredients except for the ones present in the updatedPizza
+            pizza.Ingredients.RemoveAll(i => !updatedPizza.Ingredients.Any(ingredientDto => ingredientDto.Id == i.Id));
 
             // Add the updated ingredients to the pizza
             foreach (var ingredientDto in updatedPizza.Ingredients)
             {
-                var ingredient = await _db.Ingredients.FirstOrDefaultAsync(i => i.Name == ingredientDto.Name);
+                // Check if the ingredient already exists in the pizza's ingredients
+                var existingIngredient = pizza.Ingredients.FirstOrDefault(i => i.Id == ingredientDto.Id);
 
-                if (ingredient == null)
+                if (existingIngredient == null)
                 {
-                    ingredient = new Ingredient
-                    {
-                        Name = ingredientDto.Name
-                    };
-                }
+                    // Retrieve the ingredient from the database or create a new one
+                    var ingredient = await _db.Ingredients.FirstOrDefaultAsync(i => i.Id == ingredientDto.Id);
 
-                pizza.Ingredients.Add(ingredient);
+                    if (ingredient == null)
+                    {
+                        ingredient = new Ingredient
+                        {
+                            Id = ingredientDto.Id,
+                            Name = ingredientDto.Name
+                        };
+                    }
+
+                    // Add the ingredient to the pizza
+                    pizza.Ingredients.Add(ingredient);
+                }
+                else
+                {
+                    // Update the existing ingredient's name if it has changed
+                    if (existingIngredient.Name != ingredientDto.Name)
+                    {
+                        existingIngredient.Name = ingredientDto.Name;
+                    }
+                }
             }
 
             _db.SaveChanges();
 
             return Ok("Pizza updated successfully");
         }
+
+
+
 
         //[HttpPost("addPizzeria")]
         //[ProducesResponseType(StatusCodes.Status201Created)]
