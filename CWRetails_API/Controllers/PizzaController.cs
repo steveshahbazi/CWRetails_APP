@@ -3,6 +3,7 @@ using CWRetails_API.Data;
 using CWRetails_API.Model;
 using CWRetails_API.Model.Converter;
 using CWRetails_API.Model.DTO;
+using CWRetails_API.Repository.IRepository;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -21,12 +22,16 @@ namespace CWRetails_API.Controllers
     public class PizzaController : ControllerBase
     {
         private readonly ApplicationDbContext _db;
+        private readonly IPizzeriaRepository _pizzeriaRepo;
+        private readonly IPizzaRepository _pizzaRepo;
         private readonly IMapper _mapper;
         protected APIResponse _response;
 
-        public PizzaController(ApplicationDbContext db, IMapper mapper)
+        public PizzaController(ApplicationDbContext db, IPizzeriaRepository pizzeriaRepo, IPizzaRepository pizzaRepo, IMapper mapper)
         {
             _db = db;
+            _pizzeriaRepo = pizzeriaRepo;
+            _pizzaRepo = pizzaRepo;
             _mapper = mapper;
             _response = new APIResponse();
         }

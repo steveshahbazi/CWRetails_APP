@@ -1,5 +1,7 @@
 using CWRetails_API;
 using CWRetails_API.Data;
+using CWRetails_API.Repository;
+using CWRetails_API.Repository.IRepository;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
@@ -9,6 +11,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<ApplicationDbContext>(options => {
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultSQLConnection"));
 });
+builder.Services.AddScoped<IPizzaRepository, PizzaRepository>();
+builder.Services.AddScoped<IPizzeriaRepository, PizzeriaRepository>();
 
 builder.Services.AddAutoMapper(typeof(MappingConfig));
 
