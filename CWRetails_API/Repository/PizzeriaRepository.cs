@@ -21,13 +21,9 @@ namespace CWRetails_API.Repository
             await SaveAsync();
         }
 
-        public async Task<Pizzeria> GetAsync(Expression<Func<Pizzeria, bool>>? filter, bool tracked = true)
+        public async Task<Pizzeria> GetAsync(Expression<Func<Pizzeria, bool>>? filter)
         {
             IQueryable<Pizzeria> query = _db.Pizzerias;//this should be fixed in the new version to optimise.Include(p => p.Pizzas).ThenInclude(pizza => pizza.Ingredients);
-            if (!tracked)
-            {
-                query = query.AsNoTracking();
-            }
             if (filter != null)
             {
                 query = query.Where(filter);

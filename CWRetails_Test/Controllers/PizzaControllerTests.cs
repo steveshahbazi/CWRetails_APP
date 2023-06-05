@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Net;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,6 +12,7 @@ using CWRetails_API.Model.DTO;
 using CWRetails_API.Repository.IRepository;
 using FakeItEasy;
 using FluentAssertions;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CWRetails_API.Tests.Controllers
@@ -102,5 +104,75 @@ namespace CWRetails_API.Tests.Controllers
             result.Should().BeOfType<ActionResult<APIResponse>>();
             result.Value.StatusCode.Should().Be(HttpStatusCode.InternalServerError);
         }
+
+        [Fact]
+        public async Task PizzaController_AddPizza_ReturnBadRequestWhenNewPizzaIsNull()
+        {
+            // Arrange
+            var pizzeriaName = "Test Pizzeria";
+            PizzaDto newPizza = null;
+            var controller = new PizzaController(_pizzeriaRepo, _pizzaRepo, _ingredientRepo, _mapper);
+
+            // Act
+            var result = await controller.AddPizza(pizzeriaName, newPizza);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.Result.Should().BeOfType<BadRequestObjectResult>();
+            var badRequestResult = result.Result as BadRequestObjectResult;
+            badRequestResult.StatusCode.Should().Be(StatusCodes.Status400BadRequest);
+        }
+
+        [Fact]
+        public async Task PizzaController_AddPizza_ReturnNotFoundWhenPizzeriaNotFound()
+        {
+            // Arrange
+            var pizzeriaName = "Nonexistent Pizzeria";
+            var newPizza = new PizzaDto
+            {
+                Name = "Test Pizza",
+                BasePrice = 10.99m,
+                Ingredients = new List<IngredientDto>()
+            };
+            A.CallTo(() => _pizzeriaRepo.GetAsync(A<Expression<Func<Pizzeria, bool>>>.Ignored)).Returns(Task.FromResult<Pizzeria>(null));
+            var controller = new PizzaController(_pizzeriaRepo, _pizzaRepo, _ingredientRepo, _mapper);
+
+            // Act
+            var result = await controller.AddPizza(pizzeriaName, newPizza);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.Result.Should().BeOfType<NotFoundObjectResult>();
+            var notFoundResult = result.Result as NotFoundObjectResult;
+            notFoundResult.StatusCode.Should().Be(StatusCodes.Status404NotFound);
+        }
+
+
+        [Fact]
+        public async Task PizzaController_AddPizza_ReturnOkWhenPizzaAddedSuccessfully()
+        {
+            // Arrange
+            var pizzeriaName = "Test Pizzeria";
+            var newPizza = new PizzaDto
+            {
+                Name = "Test Pizza",
+                BasePrice = 10.99m,
+                Ingredients = new List<IngredientDto>()
+            };
+            var pizzeria = new Pizzeria { Name = pizzeriaName };
+            A.CallTo(() => _pizzeriaRepo.GetAsync(A<Expression<Func<Pizzeria, bool>>>.Ignored)).Returns(pizzeria);
+            A.CallTo(() => _ingredientRepo.GetAsync(A<Expression<Func<Ingredient, bool>>>._, default)).Returns((Ingredient)null);
+            var controller = new PizzaController(_pizzeriaRepo, _pizzaRepo, _ingredientRepo, _mapper);
+
+            // Act
+            var result = await controller.AddPizza(pizzeriaName, newPizza);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.Result.Should().BeOfType<OkObjectResult>();
+            var okResult = result.Result as OkObjectResult;
+            okResult.StatusCode.Should().Be(StatusCodes.Status200OK);
+        }
+
     }
 }
