@@ -9,7 +9,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CWRetails_Web", "CWRetails_
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CWRetails_Utility", "CWRetails_Utility\CWRetails_Utility.csproj", "{44C76DFF-814B-420B-9617-3751C0629D99}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CWRetails_Test", "CWRetails_Test\CWRetails_Test.csproj", "{996D5D59-A61A-42C4-9B22-56E28F2C2988}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CWRetails_API.Tests", "CWRetails_Test\CWRetails_API.Tests.csproj", "{996D5D59-A61A-42C4-9B22-56E28F2C2988}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

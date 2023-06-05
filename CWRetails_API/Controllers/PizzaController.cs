@@ -38,6 +38,7 @@ namespace CWRetails_API.Controllers
         }
 
         [HttpGet("pizzeriasNames")]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public async Task<ActionResult<APIResponse>> GetPizzeriaNames()
         {
@@ -51,6 +52,7 @@ namespace CWRetails_API.Controllers
             catch (Exception ex)
             {
                 _response.IsSuccess = false;
+                _response.StatusCode = HttpStatusCode.InternalServerError;
                 _response.ErrorMessages = new List<string> { ex.Message };
             }
             return _response;
@@ -266,51 +268,62 @@ namespace CWRetails_API.Controllers
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
         public async Task<ActionResult<APIResponse>> AddPizza(string pizzeriaName, PizzaDto newPizza)
         {
-            if (newPizza == null)
+            try
             {
-                _response.StatusCode = HttpStatusCode.BadRequest;
-                return BadRequest(_response);
-            }
-
-            var pizzeria = await _pizzeriaRepo.GetAsync(p => p.Name == pizzeriaName);
-            if (pizzeria == null)
-            {
-                _response.StatusCode = HttpStatusCode.BadRequest;
-                _response.Result = "Pizzeria not found";
-                return NotFound(_response);
-            }
-
-            var pizza = new Pizza
-            {
-                Name = newPizza.Name,
-                BasePrice = newPizza.BasePrice,
-                Pizzeria = pizzeria,
-                Ingredients = new List<Ingredient>()
-            };
-
-            foreach (var ingredientDto in newPizza.Ingredients)
-            {
-                var ingredient = await _ingredientRepo.GetAsync(i => i.Id == ingredientDto.Id);
-                if (ingredient == null)
+                if (newPizza == null || string.IsNullOrEmpty(newPizza.Name))
                 {
-                    ingredient = new Ingredient
-                    {
-                        Id = ingredientDto.Id,
-                        Name = ingredientDto.Name
-                    };
+                    _response.StatusCode = HttpStatusCode.BadRequest;
+                    return BadRequest(_response);
                 }
 
-                pizza.Ingredients.Add(ingredient);
+                var pizzeria = await _pizzeriaRepo.GetAsync(p => p.Name == pizzeriaName);
+                if (pizzeria == null)
+                {
+                    _response.StatusCode = HttpStatusCode.BadRequest;
+                    _response.Result = "Pizzeria not found";
+                    return NotFound(_response);
+                }
+
+                var pizza = new Pizza
+                {
+                    Name = newPizza.Name,
+                    BasePrice = newPizza.BasePrice,
+                    Pizzeria = pizzeria,
+                    Ingredients = new List<Ingredient>()
+                };
+
+                foreach (var ingredientDto in newPizza.Ingredients)
+                {
+                    var ingredient = await _ingredientRepo.GetAsync(i => i.Id == ingredientDto.Id);
+                    if (ingredient == null)
+                    {
+                        ingredient = new Ingredient
+                        {
+                            Id = ingredientDto.Id,
+                            Name = ingredientDto.Name
+                        };
+                    }
+
+                    pizza.Ingredients.Add(ingredient);
+                }
+
+                await _pizzaRepo.CreateAsync(pizza);
+
+                var pizzaDto = _mapper.Map<Pizza, PizzaDto>(pizza);
+                _response.Result = pizzaDto;
+                _response.StatusCode = HttpStatusCode.OK;
+                return Ok(_response);
             }
-
-            await _pizzaRepo.CreateAsync(pizza);
-
-            var pizzaDto = _mapper.Map<Pizza, PizzaDto>(pizza);
-            _response.Result = pizzaDto;
-            _response.StatusCode = HttpStatusCode.OK;
-            return Ok(_response);
+            catch (Exception ex)
+            {
+                _response.IsSuccess = false;
+                _response.StatusCode = HttpStatusCode.InternalServerError;
+                _response.ErrorMessages = new List<string> { ex.Message };
+            }
+            return _response;
         }
 
         [HttpGet("getPizza")]
