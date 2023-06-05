@@ -23,7 +23,7 @@ namespace CWRetails_API.Repository
 
         public async Task<Pizza> GetAsync(Expression<Func<Pizza, bool>>? filter, bool tracked = true)
         {
-            IQueryable<Pizza> query = _db.Pizzas.OrderByDescending(t => t.Id);
+            IQueryable<Pizza> query = _db.Pizzas.Include(p => p.Ingredients);
             if (!tracked)
             {
                 query = query.AsNoTracking();
@@ -37,23 +37,23 @@ namespace CWRetails_API.Repository
 
         public async Task<List<Pizza>> GetAllAsync(Expression<Func<Pizza, bool>>? filter)
         {
-            IQueryable<Pizza> query = _db.Pizzas;
+            IQueryable<Pizza> query = _db.Pizzas.Include(p => p.Ingredients);
             if (filter != null)
             {
                 query = query.Where(filter);
             }
-            return await query.ToListAsync();
+            return await query.Distinct().ToListAsync();
         }
 
-        public async Task RemoveAsync(Pizza term)
+        public async Task RemoveAsync(Pizza pizza)
         {
-            _db.Pizzas.Remove(term);
+            _db.Pizzas.Remove(pizza);
             await SaveAsync();
         }
 
-        public async Task UpdateAsync(Pizza term)
+        public async Task UpdateAsync(Pizza pizza)
         {
-            _db.Pizzas.Update(term);
+            _db.Pizzas.Update(pizza);
             await SaveAsync();
         }
 

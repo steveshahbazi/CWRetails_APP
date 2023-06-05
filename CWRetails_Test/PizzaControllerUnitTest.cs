@@ -41,7 +41,7 @@ namespace CWRetails_Test
             });
             _mapper = config.CreateMapper();
 
-            _controller = new PizzaController(_dbMock.Object, null, null, _mapper);
+            _controller = new PizzaController(null, null, null, _mapper);
         }
 
         [Fact]
